@@ -16,5 +16,5 @@ The explanation below assumes use of an xApp in Xaman.
 Make sure to set a publicKey as HookParam while installing the hook. 
 And use ParameterName as `{ 0x50U }` or `P`
 
-### HookParameter
+### HookParameter (Transaction Parameter)
 Key is `{ 0x49U }` or `I`
