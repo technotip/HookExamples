@@ -17,9 +17,9 @@ int64_t hook(uint32_t reserved) {
     if(hook_param(publickey_ptr, 33, publickey, 1) != 33)
         rollback(SBUF("Pre-Authorize: PublicKey not set as Hook parameter"), 2);  
 
-    uint8_t inputKey[2] = { 0xCAU, 0xFEU };
+    uint8_t inputKey[1] = { 0x49U };
     uint8_t input[100];
-    if(otxn_param(input, 100, inputKey, 2) != 100)
+    if(otxn_param(input, 100, inputKey, 1) != 100)
         rollback(SBUF("Pre-Authorize: Blob must be 64 + 20 + 8 + 8 = 100 bytes."), 3);   
 
     if(util_verify(input + 64, 36, input, 64, publickey_ptr, 33) != 1) {
