@@ -17,4 +17,4 @@ Make sure to set a publicKey as HookParam while installing the hook.
 And use ParameterName as `{ 0x50U }` or `P`
 
 ### HookParameter
-Key is `{ 0xCAU, 0xFEU }` or `CAFE`
+Key is `{ 0x49U }` or `I`
