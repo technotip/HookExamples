@@ -19,7 +19,7 @@ And use ParameterName as `{ 0x50U }` or `P`
 ### HookParameter (Transaction Parameter)
 Key is `{ 0x49U }` or `I`
 
-### Help:
+### Utils:
 [raddress to account id](https://github.com/technotip/HooksTools/blob/main/raddress-to-accountid.ts)
 
 [float to XFL](https://github.com/technotip/HooksTools/blob/main/float-to-xfl.ts)
