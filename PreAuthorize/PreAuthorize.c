@@ -21,7 +21,6 @@ int64_t hook(uint32_t reserved) {
     if(hook_param(publickey_ptr, 33, publickey, 1) != 33)
         rollback(SBUF("Pre-Authorize: PublicKey not set as Hook parameter"), 3);  
 
-
     uint8_t inputKey[1] = { 0x49U };
     uint8_t input[104];
     if(otxn_param(input, 104, inputKey, 1) != 104)
@@ -35,20 +34,20 @@ int64_t hook(uint32_t reserved) {
         rollback(SBUF("Pre-Authorize: Unauthorized Account."), 6);  
 
     uint32_t dest = *((int32_t*)input[84]);
-    if(float_compare(dest_tag, dest, COMPARE_EQUAL) == 0)
+    if(float_compare(dest_tag, dest, COMPARE_EQUAL) != 1)
         rollback(SBUF("Pre-Authorize: Wrong Recipient."), 7);        
 
     uint64_t amount   = *((int64_t*)input[88]);
     uint8_t amount_buf[48];
     otxn_field(SBUF(amount_buf), sfAmount);    
     uint64_t txn_amount = *((int64_t*)amount_buf);
-    if(float_compare(amount, txn_amount, COMPARE_EQUAL) == 0)
+    if(float_compare(amount, txn_amount, COMPARE_EQUAL) != 1)
         rollback(SBUF("Pre-Authorize: Unauthorized Amount."), 8);
 
     uint64_t sequence = *((int64_t*)input[96]);
     uint64_t user_acc_seq;
     otxn_field(SVAR(user_acc_seq), sfSequence);
-    if(float_compare(sequence, user_acc_seq, COMPARE_EQUAL) == 0)
+    if(float_compare(sequence, user_acc_seq, COMPARE_EQUAL) != 1)
         rollback(SBUF("Pre-Authorize: Authorization Previously Used."), 9);
   
     accept(SBUF("Pre-Authorize: Payment Verified and Accepted."), 10);
