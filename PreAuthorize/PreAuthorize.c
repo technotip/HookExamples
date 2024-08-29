@@ -37,20 +37,22 @@ int64_t hook(uint32_t reserved) {
     if(float_compare(dest_tag, dest, COMPARE_EQUAL) != 1)
         rollback(SBUF("Pre-Authorize: Wrong Recipient."), 7);        
 
-    uint64_t amount   = *((int64_t*)input[88]);
     uint8_t amount_buf[48];
-    otxn_field(SBUF(amount_buf), sfAmount);    
+    if(otxn_field(SBUF(amount_buf), sfAmount) != 48) 
+        rollback(SBUF("Pre-Authorize: Invalid Issued Currency."), 8);
+
+    uint64_t amount   = *((int64_t*)input[88]);    
     uint64_t txn_amount = *((int64_t*)amount_buf);
     if(float_compare(amount, txn_amount, COMPARE_EQUAL) != 1)
-        rollback(SBUF("Pre-Authorize: Unauthorized Amount."), 8);
+        rollback(SBUF("Pre-Authorize: Unauthorized Amount."), 9);
 
     uint64_t sequence = *((int64_t*)input[96]);
     uint64_t user_acc_seq;
     otxn_field(SVAR(user_acc_seq), sfSequence);
     if(float_compare(sequence, user_acc_seq, COMPARE_EQUAL) != 1)
-        rollback(SBUF("Pre-Authorize: Authorization Previously Used."), 9);
+        rollback(SBUF("Pre-Authorize: Authorization Previously Used."), 10);
   
-    accept(SBUF("Pre-Authorize: Payment Verified and Accepted."), 10);
+    accept(SBUF("Pre-Authorize: Payment Verified and Accepted."), 11);
     _g(1,1);
     return 0;    
 }
