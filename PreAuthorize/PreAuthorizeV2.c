@@ -44,11 +44,17 @@ int64_t hook(uint32_t reserved) {
     if(otxn_field(SBUF(amount_buf), sfAmount) != 48) 
         rollback(SBUF("Pre-Authorize: Invalid Issued Currency."), 9);
 
-    uint64_t amount     = *((int64_t*)(payload + 24));    
-    uint64_t txn_amount = *((int64_t*)amount_buf);
+    int64_t amount     = *((int64_t*)(payload + 24));    
+    int64_t txn_amount = *((int64_t*)amount_buf);
     
+    TRACEHEX(amount_buf);
     TRACEVAR(amount);
     TRACEVAR(txn_amount);
+
+    	
+     int64_t amount_xfl = UINT64_FROM_BUF(amount_buf);
+    TRACEVAR(amount_xfl);
+
 
     if(float_compare(amount, txn_amount, COMPARE_EQUAL) != 1)
         rollback(SBUF("Pre-Authorize: Unauthorized Amount."), 10);
