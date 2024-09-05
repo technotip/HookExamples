@@ -30,7 +30,7 @@ int64_t hook(uint32_t reserved) {
     if(otxn_param(signature, 64, sign_key, 1) != 64)
         rollback(SBUF("Pre-Authorize: HookParameter Signature must be 64 bytes."), 5);          
 
-    if(util_verify(signature, 64, payload, 40, publickey_ptr, 33) != 1)
+    if(util_verify(payload, 40, signature, 64, publickey_ptr, 33) != 1)
         rollback(SBUF("Pre-Authorize: Unauthorized Transaction."), 6);   
 
     BUFFER_EQUAL(equal, payload, user_acc_id, 20);
