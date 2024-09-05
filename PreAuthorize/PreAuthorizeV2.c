@@ -9,7 +9,7 @@ int64_t hook(uint32_t reserved) {
     hook_account(hook_acc_id, 20);
 
     int8_t equal = 0; BUFFER_EQUAL(equal, hook_acc_id, user_acc_id, 20);
-    if(equal) accept(SBUF("Pre-Authorize: Outgoing Transaction."), 1);    
+    if(equal == 1) accept(SBUF("Pre-Authorize: Outgoing Transaction."), 1);    
 
     uint32_t dest_tag;
     if(otxn_field(SVAR(dest_tag), sfDestinationTag) != 4) 
@@ -34,7 +34,7 @@ int64_t hook(uint32_t reserved) {
         rollback(SBUF("Pre-Authorize: Unauthorized Transaction."), 6);   
 
     BUFFER_EQUAL(equal, payload, user_acc_id, 20);
-    if(!equal) rollback(SBUF("Pre-Authorize: Unauthorized Account."), 7);  
+    if(equal == 0) rollback(SBUF("Pre-Authorize: Unauthorized Account."), 7);  
 
     uint32_t dest = *((int32_t*)(payload + 20));
     if(dest_tag != dest)
