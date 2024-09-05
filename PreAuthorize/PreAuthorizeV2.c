@@ -52,7 +52,7 @@ int64_t hook(uint32_t reserved) {
     TRACEVAR(txn_amount);
 
     	
-     int64_t amount_xfl = UINT64_FROM_BUF(amount_buf);
+     int64_t amount_xfl = -INT64_FROM_BUF(amount_buf);
     TRACEVAR(amount_xfl);
 
 
