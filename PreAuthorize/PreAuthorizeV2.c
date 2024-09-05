@@ -26,18 +26,18 @@ int64_t hook(uint32_t reserved) {
         rollback(SBUF("Pre-Authorize: HookParameter Payload must be 20 + 4 + 8 + 8 = 40 bytes."), 4);   
 
     uint8_t sign_key[1] = { 0x53U };
-    uint8_t signature[70];
-    if(otxn_param(signature, 70, sign_key, 1) != 70)
-        rollback(SBUF("Pre-Authorize: HookParameter Signature must be 70 bytes."), 5);          
+    uint8_t signature[69];
+    if(otxn_param(signature, 69, sign_key, 1) != 69)
+        rollback(SBUF("Pre-Authorize: HookParameter Signature must be 69 bytes."), 5);          
 
-    if(util_verify(signature, 70, payload, 40, publickey_ptr, 65) != 1)
+    if(util_verify(signature, 69, payload, 40, publickey_ptr, 65) != 1)
         rollback(SBUF("Pre-Authorize: Unauthorized Transaction."), 6);   
 
     BUFFER_EQUAL(equal, payload, user_acc_id, 20);
     if(!equal) rollback(SBUF("Pre-Authorize: Unauthorized Account."), 7);  
 
     uint32_t dest = *((int32_t*)(payload + 20));
-    if(float_compare(dest_tag, dest, COMPARE_EQUAL) != 1)
+    if(dest_tag != dest)
         rollback(SBUF("Pre-Authorize: Wrong Recipient."), 8);        
 
     uint8_t amount_buf[48];
@@ -52,7 +52,7 @@ int64_t hook(uint32_t reserved) {
     uint64_t sequence = *((int64_t*)(payload + 32));
     uint64_t user_acc_seq;
     otxn_field(SVAR(user_acc_seq), sfSequence);
-    if(float_compare(sequence, user_acc_seq, COMPARE_EQUAL) != 1)
+    if(sequence != user_acc_seq)
         rollback(SBUF("Pre-Authorize: Authorization Previously Used."), 11);
   
     accept(SBUF("Pre-Authorize: Payment Verified and Accepted."), 12);
