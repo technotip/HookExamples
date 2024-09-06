@@ -33,7 +33,7 @@ int64_t hook(uint32_t reserved) {
         rollback(SBUF("Pre-Authorize: Unauthorized Account."), 6);  
 
     uint32_t dest = *((int32_t*)(input + 84));
-    if(float_compare(dest_tag, dest, COMPARE_EQUAL) != 1)
+    if(dest_tag != dest)
         rollback(SBUF("Pre-Authorize: Wrong Recipient."), 7);        
 
     uint8_t amount_buf[48];
