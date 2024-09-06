@@ -29,8 +29,7 @@ int64_t hook(uint32_t reserved) {
         rollback(SBUF("Pre-Authorize: Unauthorized Transaction."), 5);   
 
     BUFFER_EQUAL(equal, input + 64, user_acc_id, 20);
-    if(!equal)
-        rollback(SBUF("Pre-Authorize: Unauthorized Account."), 6);  
+    if(!equal) rollback(SBUF("Pre-Authorize: Unauthorized Account."), 6);  
 
     uint32_t dest = *((int32_t*)(input + 84));
     if(dest_tag != dest)
