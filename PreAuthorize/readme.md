@@ -1,3 +1,5 @@
+This docs is for [PreAuthorize.c](https://github.com/technotip/HookExamples/blob/main/PreAuthorize/PreAuthorize.c)
+
 ### Back story
 This involves use of centralized server/backend to generate a signature.
 The explanation below assumes use of an xApp in Xaman.
