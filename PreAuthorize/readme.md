@@ -2,6 +2,8 @@
 This involves use of centralized server/backend to generate a signature.
 The explanation below assumes use of an xApp in Xaman.
 
+https://x.com/Satish_nl/status/1831962572297531847
+
 ### How it works
 1. Generate a random private key and public key. Set the public key as hook parameter.
 2. When a user initiates a payment via your xApp: use an endpoint to generate a hex string.
