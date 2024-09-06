@@ -21,6 +21,15 @@ And use ParameterName as `{ 0x50U }` or `P`
 ### HookParameter (Transaction Parameter)
 Key is `{ 0x49U }` or `I`
 
+### Payload
+```
+const accountId = rippleAddressCodec.decodeAccountID(Account)
+const payload = Buffer.concat([ accountId, destination_tag, amount_xfl, sequence_no ])
+const signature = Buffer.from(sign(payload.toString('hex'), Voucher.privateKey), 'hex')
+
+const Blob = Buffer.concat([ signature, payload ]).toString('hex')
+```
+
 ### Utils:
 [raddress to account id](https://github.com/technotip/HooksTools/blob/main/raddress-to-accountid.ts)
 
