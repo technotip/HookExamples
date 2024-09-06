@@ -32,6 +32,13 @@ const signature = Buffer.from(sign(payload.toString('hex'), privateKey), 'hex')
 const Blob = Buffer.concat([ signature, payload ]).toString('hex')
 ```
 
+```
+HookParameter: {
+                    HookParameterName: "49",
+                    HookParameterValue:  Blob
+              },
+```
+
 ### Utils:
 [raddress to account id](https://github.com/technotip/HooksTools/blob/main/raddress-to-accountid.ts)
 
