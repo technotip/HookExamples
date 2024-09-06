@@ -25,7 +25,7 @@ Key is `{ 0x49U }` or `I`
 ```
 const accountId = rippleAddressCodec.decodeAccountID(Account)
 const payload = Buffer.concat([ accountId, destination_tag, amount_xfl, sequence_no ])
-const signature = Buffer.from(sign(payload.toString('hex'), Voucher.privateKey), 'hex')
+const signature = Buffer.from(sign(payload.toString('hex'), privateKey), 'hex')
 
 const Blob = Buffer.concat([ signature, payload ]).toString('hex')
 ```
