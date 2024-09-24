@@ -43,10 +43,11 @@ int64_t hook(uint32_t reserved) {
     }
 
     uint8_t limit[1] = { 0x41U };
-    int64_t limit_ptr;
-    if(hook_param(SVAR(limit_ptr), limit, 1) != 8)
+    uint8_t amountSet[32];
+    if(hook_param(SBUF(amountSet), limit, 1) != 32)
         rollback(SBUF("Lockup: Transaction limit (Amount) not set as Hook parameter"), 5);
 
+    int64_t limit_ptr = *((int64_t*)amountSet);
     if(float_compare(amount, limit_ptr, COMPARE_GREATER) == 1)
         rollback(SBUF("Lockup: Outgoing transaction exceeds the limit set by you."), 6);
 
