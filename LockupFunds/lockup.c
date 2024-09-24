@@ -50,6 +50,8 @@ int64_t hook(uint32_t reserved) {
     uint64_t otxn_drops = AMOUNT_TO_DROPS(amount);
     int64_t amount_xfl = float_set(-6, otxn_drops);
 
+    // int64_t amount_xfl = -INT64_FROM_BUF(amount);
+
     if(float_compare(amount_xfl, limit_ptr, COMPARE_GREATER) == 1)
         rollback(SBUF("Lockup: Outgoing transaction exceeds the limit set by you."), 6);
 
