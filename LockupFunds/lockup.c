@@ -35,7 +35,7 @@ int64_t hook(uint32_t reserved) {
 
     SETUP_CURRENT_MONTH();
 
-    uint8_t paid = 0;
+    uint8_t paid;
     if(state(SVAR(paid), hook_acc, 32) == 1) {
         if(paid == current_month) {
             rollback(SBUF("Lockup: Already made Payment for the month."), 4);
