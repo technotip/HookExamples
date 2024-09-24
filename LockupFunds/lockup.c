@@ -29,8 +29,8 @@ int64_t hook(uint32_t reserved) {
     int8_t equal = 0; BUFFER_EQUAL(equal, hook_acc, account, 20);
     if(!equal) accept(SBUF("Lockup: Incoming Transaction."), 2);
 
-    int64_t amount;
-    if(otxn_field(SVAR(amount), sfAmount) > 8)  
+    uint8_t amount[8];
+    if(otxn_field(SBUF(amount), sfAmount) > 8)  
         accept(SBUF("Lockup: Outgoing non XAH currency/token."), 3);
 
     SETUP_CURRENT_MONTH();
@@ -43,12 +43,14 @@ int64_t hook(uint32_t reserved) {
     }
 
     uint8_t limit[1] = { 0x41U };
-    uint8_t amountSet[32];
-    if(hook_param(SBUF(amountSet), limit, 1) != 32)
+    int64_t limit_ptr;
+    if(hook_param(SVAR(limit_ptr), limit, 1) != 8)
         rollback(SBUF("Lockup: Transaction limit (Amount) not set as Hook parameter"), 5);
 
-    int64_t limit_ptr = *((int64_t*)amountSet);
-    if(float_compare(amount, limit_ptr, COMPARE_GREATER) == 1)
+    uint64_t otxn_drops = AMOUNT_TO_DROPS(amount);
+    int64_t amount_xfl = float_set(-6, otxn_drops);
+
+    if(float_compare(amount_xfl, limit_ptr, COMPARE_GREATER) == 1)
         rollback(SBUF("Lockup: Outgoing transaction exceeds the limit set by you."), 6);
 
     state_set(SVAR(current_month), hook_acc, 32);
