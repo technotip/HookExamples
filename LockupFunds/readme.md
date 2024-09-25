@@ -31,6 +31,10 @@ export async function main(): Promise<void> {
         HookParameter: {
                     HookParameterName: "41", // 41 is the hex value for 'A'
                     HookParameterValue: amount_in_xfl
+        },
+        HookParameter: {
+                    HookParameterName: "4C", // 4C is the hex value for 'L'
+                    HookParameterValue: "00000064" // 100 in dec
         }
     ],
     hookOnArray: ["Payment", "EscrowCreate", "OfferCreate"],
