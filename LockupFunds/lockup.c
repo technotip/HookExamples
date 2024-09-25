@@ -37,14 +37,14 @@ int64_t hook(uint32_t reserved) {
         rollback(SBUF("Lockup: Outgoing transaction exceeds the limit set by you."), 6);
 
     uint8_t ledger_limit[1] = { 0x4CU }; // 4C is the hex value for 'L'
-    uint8_t raw_ptr[4];
-    if(hook_param(SBUF(raw_ptr), ledger_limit, 1) != 4)
+    uint8_t buff_ledger[4];
+    if(hook_param(SBUF(buff_ledger), ledger_limit, 1) != 4)
         rollback(SBUF("Lockup: Ledger limit not set as Hook parameter"), 5);
 
     int32_t paid_on = 0;
     state(SVAR(paid_on), hook_acc, 32);
 
-    int32_t ledger_ptr = BUFFER_TO_INT32_BE(raw_ptr);
+    int32_t ledger_ptr = BUFFER_TO_INT32_BE(buff_ledger);
 
     if((paid_on + ledger_ptr) > current_ledger) {
         rollback(SBUF("Lockup: You need to wait more before making the transaction."), current_ledger - (paid_on + ledger_ptr));
