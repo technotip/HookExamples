@@ -34,7 +34,7 @@ export async function main(): Promise<void> {
         },
         HookParameter: {
                     HookParameterName: "4C", // 4C is the hex value for 'L'
-                    HookParameterValue: "00000064" // 100 in dec
+                    HookParameterValue: "00000064" // 100 in decimal. This is the ledger interval after which the payment can be done
         }
     ],
     hookOnArray: ["Payment", "EscrowCreate", "OfferCreate"],
