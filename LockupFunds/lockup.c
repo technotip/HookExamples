@@ -34,7 +34,7 @@ int64_t hook(uint32_t reserved) {
     if(float_compare(amount_xfl, limit_amt, COMPARE_GREATER) == 1)
         rollback(SBUF("Lockup: Outgoing transaction exceeds the limit set by you."), 5);
 
-    key[0] =  0x4CU ;       // 4C is the hex value for 'L'
+    key[0] =  0x4CU;       // 4C is the hex value for 'L'
     uint8_t limit_ledger[4];
     if(hook_param(SBUF(limit_ledger), key, 1) != 4)
         rollback(SBUF("Lockup: Ledger limit not set as Hook parameter"), 6);
