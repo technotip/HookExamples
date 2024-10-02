@@ -1,6 +1,7 @@
 ### Lock up funds: hook
 
-Voluntarily lock up the amount of **XAH** going out from the account every month. Also commit to only making one outgoing XAH transaction per month.
+Voluntarily lock up the amount of **XAH** going out from the account every fixed ledger interval. 
+Also commit to only making one outgoing XAH transaction per set limit.
 
 ### Installing the Hook on your account
 
