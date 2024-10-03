@@ -8,28 +8,26 @@ int64_t hook(uint32_t reserved) {
     uint8_t hook_acc_id[20];
     hook_account(hook_acc_id, 20);
 
-    int8_t equal = 0; BUFFER_EQUAL(equal, hook_acc_id, user_acc_id, 20);
-    if(equal) accept(SBUF("Pre-Authorize: Outgoing Transaction."), 1);    
+    if(BUFFER_EQUAL_20(hook_acc_id, user_acc_id)) 
+        accept(SBUF("Pre-Authorize: Outgoing Transaction."), 1);    
 
     uint32_t dest_tag;
     if(otxn_field(SVAR(dest_tag), sfDestinationTag) != 4) 
         rollback(SBUF("Pre-Authorize: Destination Tag Missing"), 2);
 
-    uint8_t publickey[1] = { 0x50U };
     uint8_t publickey_ptr[33];
-    if(hook_param(publickey_ptr, 33, publickey, 1) != 33)
+    if(hook_param(publickey_ptr, 33, "P", 1) != 33)
         rollback(SBUF("Pre-Authorize: PublicKey not set as Hook parameter"), 3);  
 
-    uint8_t inputKey[1] = { 0x49U };
     uint8_t input[100];
-    if(otxn_param(input, 100, inputKey, 1) != 100)
+    if(otxn_param(input, 100, "I", 1) != 100)
         rollback(SBUF("Pre-Authorize: HookParameter must be 64 + 20 + 4 + 8 + 4 = 100 bytes."), 4);   
 
     if(util_verify(input + 64, 36, input, 64, publickey_ptr, 33) != 1)
         rollback(SBUF("Pre-Authorize: Unauthorized Transaction."), 5);   
 
-    BUFFER_EQUAL(equal, input + 64, user_acc_id, 20);
-    if(!equal) rollback(SBUF("Pre-Authorize: Unauthorized Account."), 6);  
+    if(!BUFFER_EQUAL_20(input + 64, user_acc_id)) 
+        rollback(SBUF("Pre-Authorize: Unauthorized Account."), 6);  
 
     uint32_t dest = *((int32_t*)(input + 84));
     if(dest_tag != dest)
