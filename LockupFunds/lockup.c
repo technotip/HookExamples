@@ -2,51 +2,61 @@
 
 #define OTXN_AMT_TO_XFL(buf) float_set(-6, AMOUNT_TO_DROPS(buf))
 
-int64_t hook(uint32_t reserved) {  
-    uint8_t key[1] = { 0x4CU }; // 4C is the hex value for 'L'
-    int32_t current_ledger =  ledger_seq();
+#define DONE(x) accept(SBUF(x), __LINE__)
+#define NOPE(x) rollback(SBUF(x), __LINE__)
 
-    // We need to block more transactions like URIToken offer etc. We need to decide on this. Also SetHook at position.
-    int64_t type = otxn_type();
-    if(type == ttOFFER_CREATE || type == ttESCROW_CREATE) 
-        rollback(SBUF("Lockup: Transaction Type not allowed."), 1);
+int64_t hook(uint32_t reserved)
+{  
+    // first sanity check all the parameters, if any are missing we just pass all txns until the hook is correctly configured
+    uint64_t limit_amt;
+    if(hook_param(SVAR(limit_amt), "A", 1) != 8)       // supply A in HookParameters as little endian 8 byte xfl
+        DONE("Lockup: Misconfigured. Amount 'A' not set as Hook parameter");
 
-    // if type is ttPAYMENT
+    uint32_t limit_ledger;
+    if(hook_param(SVAR(limit_ledger), "L", 1) != 4)    // supply L in HookParameters as little endian 4 byte uint32
+        DONE("Lockup: Misconfigured. Ledger limit 'L' not set as Hook parameter");
+
+    // pass all ClaimReward transactions
+    int64_t type = otxn_type(); 
+    if (type == ttCLAIM_REWARD)
+        DONE("Lockup: Passing ClaimReward.");
+
+    // block any txn that isn't ClaimReward or Payment
+    if (type != ttPAYMENT)
+        NOPE("Lockup: Only ClaimReward and Payment txns are allowed.");
+
+    // block any payment that isn't XAH
+    uint8_t amount[8];
+    if(otxn_field(SBUF(amount), sfAmount) != 8) 
+        NOPE("Lockup: Non XAH currency payments are forbidden.");
+
+    // pass any incoming txns
     uint8_t account[20];
     otxn_field(SBUF(account), sfAccount);
     uint8_t hook_acc[20];
     hook_account(hook_acc, 20);
-
     if(!BUFFER_EQUAL_20(hook_acc, account)) 
-        accept(SBUF("Lockup: Incoming Transaction."), 2);
+        DONE("Lockup: Incoming Transaction.");
 
-    uint8_t limit_ledger[4];
-    if(hook_param(SBUF(limit_ledger), key, 1) != 4)
-        rollback(SBUF("Lockup: Ledger limit not set as Hook parameter"), 6);
+    // fetch the last time a release occured, if the state entry doesn't exist yet this is 0
+    uint32_t last_release = 0;
+    state(SVAR(last_release), "LAST", 4); // last released ledger
 
-    int32_t paid_on = 0;
-    state(SVAR(paid_on), hook_acc, 32);
+    // enforce the release interval
+    uint32_t current_ledger =  ledger_seq();
+    if (last_release + limit_ledger > current_ledger)
+        NOPE("Lockup: You need to wait longer before a release.");
 
-    int32_t ledger_ptr = UINT32_FROM_BUF(limit_ledger);
-    if((paid_on + ledger_ptr) > current_ledger)
-        rollback(SBUF("Lockup: You need to wait more before making the transaction."), current_ledger - (paid_on + ledger_ptr));
-
-    uint8_t amount[8];
-    if(otxn_field(SBUF(amount), sfAmount) != 8)  
-        accept(SBUF("Lockup: Outgoing non XAH currency/token."), 3);
-    int64_t amount_xfl = OTXN_AMT_TO_XFL(amount);
-    
-    key[0] =  0x41U;       // 41 is the hex value for 'A'    
-    int64_t limit_amt;
-    if(hook_param(SVAR(limit_amt), key, 1) != 8)
-        rollback(SBUF("Lockup: Transaction limit (Amount) not set as Hook parameter"), 4);
-
+    // enforce the release limit
+    int64_t amount_xfl = OTXN_AMT_TO_XFL(amount);  
     if(float_compare(amount_xfl, limit_amt, COMPARE_GREATER) == 1)
-        rollback(SBUF("Lockup: Outgoing transaction exceeds the limit set by you."), limit_amt);
+        NOPE("Lockup: Outgoing transaction exceeds the limit set by you."));
 
+    // update the last released state entry
+    if (state_set(SVAR(current_ledger), "LAST", 4) != 4)
+        NOPE("Lockup: Could not update state entry, bailing.");
 
-    state_set(SVAR(current_ledger), hook_acc, 32);
-    accept(SBUF("Lockup: Successful payment for the ledger limit/interval."), 8);
+    DONE("Lockup: Released successfully.");
 
     _g(1,1);
     return 0;    
