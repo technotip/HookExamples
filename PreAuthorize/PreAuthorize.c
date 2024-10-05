@@ -37,9 +37,13 @@ int64_t hook(uint32_t reserved) {
     if(otxn_field(SBUF(amount_buf), sfAmount) != 48) 
         rollback(SBUF("Pre-Authorize: Invalid Issued Currency."), 8);
 
-    int64_t amount   = *((int64_t*)(input + 88));    
-    int64_t txn_amount = -INT64_FROM_BUF(amount_buf);
+    otxn_slot(1); 
+    slot_subfield(1, sfAmount, 1); 
+    int64_t txn_amount = slot_float(1);
+    if(slot_type (1, 1) != 0) 
+        rollback(SBUF("Pre-Authorize: Invalid Issued Currency."), 8);        
 
+    int64_t amount   = *((int64_t*)(input + 88));   
     if(float_compare(amount, txn_amount, COMPARE_EQUAL) != 1)
         rollback(SBUF("Pre-Authorize: Unauthorized Amount."), 9);
 
