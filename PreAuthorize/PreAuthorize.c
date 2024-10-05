@@ -33,10 +33,6 @@ int64_t hook(uint32_t reserved) {
     if(dest_tag != dest)
         rollback(SBUF("Pre-Authorize: Wrong Recipient."), 7);        
 
-    uint8_t amount_buf[48];
-    if(otxn_field(SBUF(amount_buf), sfAmount) != 48) 
-        rollback(SBUF("Pre-Authorize: Invalid Issued Currency."), 8);
-
     otxn_slot(1); 
     slot_subfield(1, sfAmount, 1); 
     int64_t txn_amount = slot_float(1);
