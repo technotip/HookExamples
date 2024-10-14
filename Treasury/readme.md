@@ -22,6 +22,8 @@ export async function main(): Promise<void> {
 
   const amount_in_xfl = "0080C6A47E8D0356"; // equivalent to Decimal: 1M
 
+  accountSet(client, hookWallet, AccountSetAsfFlags.asfTshCollect);
+
   const hook1 = createHookPayload({
     version: 0,
     createFile: "treasury",
@@ -48,7 +50,7 @@ export async function main(): Promise<void> {
     version: 0,
     createFile: "genesisMint",
     namespace: "GENESISMINT",
-    flags: SetHookFlags.hsfOverride,
+    flags: SetHookFlags.hsfCollect + SetHookFlags.hsfOverride,
     "HookParameters": [
         HookParameter: {
                     HookParameterName: "44", // 44 is the hex value for 'D'
