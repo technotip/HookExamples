@@ -97,8 +97,8 @@ This way the amount of XAH inflow into the market can be predictable.
 
 ### Important notes
 
-The first hook (the treasury hook) must hook on every transaction, except GenesisMint.
-The second hook (the genesis mint hook) must hook only on GenesisMint.
+1. The first hook (the treasury hook) must hook on every transaction, except GenesisMint.
+2. The second hook (the genesis mint hook) must hook only on GenesisMint.
 
 If the genesis mint hook is not set, the treasury will not be able to claim the genesis mint rewards.
 
