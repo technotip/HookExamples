@@ -5,12 +5,14 @@ Voluntarily lock up the amount of **XAH** going out from the treasury account ev
 ### Installing the Hook on your account
 
 ```
-import { Client, Wallet, SetHookFlags } from "@transia/xrpl";
+import { Client, Wallet, SetHookFlags, AccountSetAsfFlags } from "@transia/xrpl";
 import {
   createHookPayload,
   setHooksV3,
   SetHookParams,
 } from "@transia/hooks-toolkit";
+
+import { accountSet } from '@transia/hooks-toolkit/dist/npm/src/libs/xrpl-helpers'
 
 export async function main(): Promise<void> {
   const serverUrl = "wss://xahau-test.net";   // Xahau Test Network
