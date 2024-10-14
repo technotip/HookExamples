@@ -94,3 +94,15 @@ main();
    And account A can also withdraw set amount(set as hook parameter - 0x41U or A) from treasury account every specified ledger interval(set as hook parameter - 0x4CU or L).
 
 This way the amount of XAH inflow into the market can be predictable.
+
+### Important notes
+
+The first hook (the treasury hook) must hook on every transaction, except GenesisMint.
+The second hook (the genesis mint hook) must hook only on GenesisMint.
+
+If the genesis mint hook is not set, the treasury will not be able to claim the genesis mint rewards.
+
+### Tools
+
+1. amount to xfl: https://hooks.services/tools/float-to-xfl
+2. raddress to account id: https://hooks.services/tools/raddress-to-accountid
