@@ -21,7 +21,7 @@ int64_t hook(uint32_t reserved) {
 
     uint8_t input[100];
     if(otxn_param(input, 100, "I", 1) != 100)
-        rollback(SBUF("Pre-Authorize: HookParameter must be 64 + 20 + 4 + 8 + 4 = 100 bytes."), 4);   
+        rollback(SBUF("Pre-Authorize: Authorization missing."), 4);   
 
     if(util_verify(input + 64, 36, input, 64, publickey_ptr, 33) != 1)
         rollback(SBUF("Pre-Authorize: Unauthorized Transaction."), 5);   
