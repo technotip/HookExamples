@@ -4,6 +4,15 @@
 
 int64_t hook(uint32_t reserved)
 {  
+
+    int64_t type = otxn_type(); 
+
+    uint32_t last_release = 0;
+    state(SVAR(last_release), "LAST", 4);
+
+    if (last_release == 0 && type == ttHOOK_SET)
+        accept(SBUF("Treasury: Hook Set Successfully."), 13);
+
     uint64_t amt_param;
     if(hook_param(SVAR(amt_param), "A", 1) != 8) 
         rollback(SBUF("Treasury: Misconfigured. Amount 'A' not set as Hook parameter"), 1);
@@ -33,17 +42,6 @@ int64_t hook(uint32_t reserved)
     if (slot_set(SBUF(keylet), 1) == DOESNT_EXIST)
         rollback(SBUF("Treasury: The Set Destination Account Does Not Exist."), 8);
 
-
-    int64_t type = otxn_type(); 
-
-    uint32_t last_release = 0;
-    state(SVAR(last_release), "LAST", 4);
-
-    TRACEVAR(last_release);
-    TRACEVAR(last_release == 0);
-
-    if (last_release == 0 && type == ttHOOK_SET)
-        accept(SBUF("Treasury: Hook Set Successfully."), 13);
 
     if (type == ttCLAIM_REWARD)
         accept(SBUF("Treasury: ClaimReward Successful."), 9);
@@ -75,7 +73,7 @@ int64_t hook(uint32_t reserved)
     int64_t amount_xfl = OTXN_AMT_TO_XFL(amount);          
 
     if(float_compare(amount_xfl, amt_param, COMPARE_GREATER) == 1)
-        rollback(SBUF("Treasury: Outgoing transaction exceeds the limit set by you."), 14);               
+        rollback(SBUF("Treasury: Outgoing transaction exceeds the amount limit set by you."), 14);               
 
     if (state_set(SVAR(current_ledger), "LAST", 4) != 4)
         rollback(SBUF("Treasury: Could not update state entry, bailing."), 16);
