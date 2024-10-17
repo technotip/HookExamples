@@ -10,7 +10,14 @@ import {
   createHookPayload,
   setHooksV3,
   SetHookParams,
+  flipHex
 } from "@transia/hooks-toolkit";
+
+import {
+  uint32ToHex,
+  xflToHex,
+  xrpAddressToHex,
+} from '@transia/hooks-toolkit/dist/npm/src/libs/binary-models'
 
 import { accountSet } from '@transia/hooks-toolkit/dist/npm/src/libs/xrpl-helpers'
 
@@ -22,7 +29,9 @@ export async function main(): Promise<void> {
   const secret = "" // Your account secret
   const hookWallet = Wallet.fromSeed(secret);
 
-  const amount_in_xfl = "0080C6A47E8D0356"; // equivalent to Decimal: 1M
+  const amount_in_xfl = xflToHex(10);
+  const ledger_interval = flipHex(uint32ToHex(100));
+  const destination_account = xrpAddressToHex("rHdkzpxr3VfabJh9tUEDv7N4DJEsA4UioT");
 
   accountSet(client, hookWallet, AccountSetAsfFlags.asfTshCollect);
 
@@ -38,11 +47,11 @@ export async function main(): Promise<void> {
         },
         HookParameter: {
                     HookParameterName: "4C", // 4C is the hex value for 'L'
-                    HookParameterValue: "64000000" // 100 in decimal. This is the ledger interval after which the payment can be done (explained below).
+                    HookParameterValue: ledger_interval
         },
         HookParameter: {
                     HookParameterName: "44", // 44 is the hex value for 'D'
-                    HookParameterValue: "B675B3DE010A7C7A2DF655C54C284A2113FFD76B" // account ID of rHdkzpxr3VfabJh9tUEDv7N4DJEsA4UioT
+                    HookParameterValue: destination_account
         }
     ],
     hookOnArray: ["Payment", "EscrowCreate", "OfferCreate", "ClaimReward", "PaymentChannelCreate", "URITokenCreate", "NFTCreate", "NFTAcceptOffer", "SetHook"], // HookOn everything except GenesisMint.
@@ -56,7 +65,7 @@ export async function main(): Promise<void> {
     "HookParameters": [
         HookParameter: {
                     HookParameterName: "44", // 44 is the hex value for 'D'
-                    HookParameterValue: "B675B3DE010A7C7A2DF655C54C284A2113FFD76B" // account ID of rHdkzpxr3VfabJh9tUEDv7N4DJEsA4UioT
+                    HookParameterValue: destination_account
         }
     ],
     hookOnArray: ["GenesisMint"],
