@@ -2,8 +2,6 @@
 
 #define OTXN_AMT_TO_XFL(buf) float_set(-6, (AMOUNT_TO_DROPS(buf)))
 
-#define ttHOOK_SET 22
-
 int64_t hook(uint32_t reserved)
 {  
     uint64_t amt_param;
@@ -19,7 +17,8 @@ int64_t hook(uint32_t reserved)
     uint32_t ledger_param;
     if(hook_param(SVAR(ledger_param), "L", 1) != 4)
         rollback(SBUF("Treasury: Misconfigured. Ledger limit 'L' not set as Hook parameter"), 4);
-// 324000
+    
+    // 324000: changed to 50 for testing
     if(ledger_param < 50 || ledger_param > 7884000)
         rollback(SBUF("Treasury: Ledger limit must be between 324,000(15 days) and 7,884,000(365 days)."), 5);
 
