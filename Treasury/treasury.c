@@ -2,9 +2,12 @@
 
 #define OTXN_AMT_TO_XFL(buf) float_set(-6, (AMOUNT_TO_DROPS(buf)))
 
+#define AMOUNT_LIMIT 6215967485771284480LLU // 10M XAH
+#define MIN_LEDGER_LIMIT 50 // 50 ledger
+#define MAX_LEDGER_LIMIT 7884000 // 365 days
+
 int64_t hook(uint32_t reserved)
 {  
-
     int64_t type = otxn_type(); 
 
     uint32_t last_release = 0;
@@ -20,7 +23,7 @@ int64_t hook(uint32_t reserved)
     if(float_compare(amt_param, 0, COMPARE_LESS | COMPARE_EQUAL) == 1)
         rollback(SBUF("Treasury: Invalid amount."), 2); 
 
-    if(float_compare(amt_param, 6215967485771284480, COMPARE_GREATER | COMPARE_EQUAL) == 1)
+    if(float_compare(amt_param, AMOUNT_LIMIT, COMPARE_GREATER | COMPARE_EQUAL) == 1)
         rollback(SBUF("Treasury: You don't want to set it to 10M plus XAH!"), 3);         
 
     uint32_t ledger_param;
@@ -28,8 +31,11 @@ int64_t hook(uint32_t reserved)
         rollback(SBUF("Treasury: Misconfigured. Ledger limit 'L' not set as Hook parameter"), 4);
     
     // 324000: changed to 50 for testing
-    if(ledger_param < 50 || ledger_param > 7884000)
-        rollback(SBUF("Treasury: Ledger limit must be between 324,000(15 days) and 7,884,000(365 days)."), 5);
+    if(ledger_param < MIN_LEDGER_LIMIT)
+        rollback(SBUF("Treasury: Ledger limit must be greater than 324,000(15 days)."), 5);
+
+    if(ledger_param > MAX_LEDGER_LIMIT)
+        rollback(SBUF("Treasury: Ledger limit less than 7,884,000(365 days)."), 5);        
 
     uint8_t dest_param[20];
     if(hook_param(SBUF(dest_param), "D", 1) != 20)
