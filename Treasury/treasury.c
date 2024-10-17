@@ -6,6 +6,8 @@
 #define MIN_LEDGER_LIMIT 50     // 324000 ledger is 15 days. Changed to 50 ledger for testing
 #define MAX_LEDGER_LIMIT 7884000 // 365 days
 
+uint8_t msg_buf[30] = "You must wait 0000000 ledgers";
+
 int64_t hook(uint32_t reserved)
 {  
     int64_t type = otxn_type(); 
@@ -68,8 +70,19 @@ int64_t hook(uint32_t reserved)
         rollback(SBUF("Treasury: Destination does not match."), 14);
 
     uint32_t current_ledger =  ledger_seq();
-    if ((last_release + ledger_param) > current_ledger)
-        rollback(SBUF("Treasury: You need to wait longer to withdraw."), 15);
+    uint32_t lgr_elapsed = last_release + ledger_param;
+    if (lgr_elapsed > current_ledger)
+    {
+        lgr_elapsed = last_release + ledger_param - current_ledger;
+        msg_buf[14] += (lgr_elapsed / 1000000) % 10;
+        msg_buf[15] += (lgr_elapsed /  100000) % 10;
+        msg_buf[16] += (lgr_elapsed /   10000) % 10;
+        msg_buf[17] += (lgr_elapsed /    1000) % 10;
+        msg_buf[18] += (lgr_elapsed /     100) % 10;
+        msg_buf[19] += (lgr_elapsed /      10) % 10;
+        msg_buf[20] += (lgr_elapsed          ) % 10;
+        rollback(SBUF(msg_buf), 15);
+    }
 
     uint8_t amount[8];
     if(otxn_field(SBUF(amount), sfAmount) != 8) 
