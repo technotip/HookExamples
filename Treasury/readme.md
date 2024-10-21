@@ -2,6 +2,12 @@
 
 Voluntarily lock up the amount of **XAH** going out from the treasury account every set ledger interval.
 
+**Payment Based Hook:** https://github.com/technotip/HookExamples/blob/main/Treasury/treasury.c
+
+**Invoke Based Hook:** https://github.com/technotip/HookExamples/blob/main/Treasury/treasuryInvoke.c
+
+With Invoke based hook, the idea is the treasury account will be blackholed, and the only way to withdraw funds is through the invoke transaction. Anybody can invoke the claim reward and the withdraw transactions - after specified ledger interval.
+
 ### Installing the Hook on your account
 
 ```
@@ -37,7 +43,7 @@ export async function main(): Promise<void> {
 
   const hook1 = createHookPayload({
     version: 0,
-    createFile: "treasury",
+    createFile: "treasuryInvoke",
     namespace: "TREASURY",
     flags: SetHookFlags.hsfOverride,
     "HookParameters": [
@@ -54,7 +60,7 @@ export async function main(): Promise<void> {
                     HookParameterValue: destination_account
         }
     ],
-    hookOnArray: ["Payment", "EscrowCreate", "OfferCreate", "ClaimReward", "PaymentChannelCreate", "URITokenCreate", "NFTCreate", "NFTAcceptOffer", "SetHook"], // HookOn everything except GenesisMint.
+    hookOnArray: ["Invoke"]
   });
 
   const hook2 = createHookPayload({
@@ -110,7 +116,7 @@ This way the amount of XAH inflow into the market can be predictable.
 
 ### Important notes
 
-1. The first hook (the treasury hook) must hook on every transaction, except GenesisMint.
+1. The first hook (the treasury hook) must hook on Invoke.
 2. The second hook (the genesis mint hook) must hook only on GenesisMint.
 
 If the genesis mint hook is not set, the treasury will not be able to claim the genesis mint(ClaimReward) rewards.
@@ -119,3 +125,41 @@ If the genesis mint hook is not set, the treasury will not be able to claim the 
 
 1. amount to xfl: https://hooks.services/tools/float-to-xfl
 2. raddress to account id: https://hooks.services/tools/raddress-to-accountid
+
+## Invoke Transactions:
+
+**Withdraw amount from treasury:** Note that the amount must be in xfl, and it should be less than the limit set by the treasury hook.
+
+```
+{
+  "TransactionType": "Invoke",
+  "Account": account.raddress,
+  "Fee": "1035",
+  "HookParameters": [
+    {
+      "HookParameter": {
+        "HookParameterName": "57", // 57 is the hex value for 'W' (withdraw)
+        "HookParameterValue": "00008D49FD1A8754"
+      }
+    }
+  ]
+}
+```
+
+**Claim monthly rewards:**
+
+```
+{
+  "TransactionType": "Invoke",
+  "Account": account.raddress,
+  "Fee": "1028",
+  "HookParameters": [
+    {
+      "HookParameter": {
+        "HookParameterName": "43", // 43 is the hex value for 'C' (claim)
+        "HookParameterValue": "00"
+      }
+    }
+  ]
+}
+```
