@@ -64,12 +64,12 @@ uint8_t txn[260] =
 
 int64_t cbak(uint32_t reserve)
 {
-    uint8_t type;
-    otxn_field(SVAR(type),sfTransactionType);
+    // uint8_t type;
+    // otxn_field(SVAR(type),sfTransactionType);
 
-    if(type != ttPAYMENT) {
-        accept(SBUF(reserve), 1);
-    }
+    // if(type != ttPAYMENT) {
+    //     accept(SBUF(reserve), 1);
+    // }
 
     uint32_t prev_release = 0;
     if(state(SVAR(prev_release), "PREV", 4) != 4)

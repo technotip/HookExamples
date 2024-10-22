@@ -2,7 +2,7 @@
 
 Voluntarily lock up the amount of **XAH** going out from the treasury account every set ledger interval.
 
-**Payment Based Hook:** https://github.com/technotip/HookExamples/blob/main/Treasury/treasury.c
+( **Payment Based Hook:** https://github.com/technotip/HookExamples/blob/main/LockupFunds/treasury.c )
 
 **Invoke Based Hook:** https://github.com/technotip/HookExamples/blob/main/Treasury/treasuryInvoke.c
 
