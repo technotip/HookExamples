@@ -3,8 +3,6 @@
 #define DONE(x) accept(SBUF(x), __LINE__)
 #define NOPE(x) rollback(SBUF(x), __LINE__)
 
-#define DROPS 1000000
-
 uint8_t txn[238] =
 {
 /* size,upto */
@@ -50,7 +48,7 @@ int64_t hook(uint32_t) {
        NOPE("Xahau Radio: Less than allowed( 1 XAH ) minimum.");
 
 
-   uint64_t fraction_part  = (otxn_drops % (uint64_t) DROPS);
+   uint64_t fraction_part  = (otxn_drops % (uint64_t) 1000000);
    if(fraction_part == 0) 
        DONE("Xahau Radio: Successful Request.");
 
