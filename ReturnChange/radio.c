@@ -55,16 +55,15 @@ int64_t hook(uint32_t) {
        DONE("Xahau Radio: Successful Request.");
 
    {
-       uint64_t drops = fraction_part; //float_int(tempState.amount_xfl, 6, 1); 
        uint8_t *b = AMOUNT_OUT; 
-       *b++ = 0b01000000 + ((drops >> 56) & 0b00111111); 
-       *b++ = (drops >> 48) & 0xFFU; 
-       *b++ = (drops >> 40) & 0xFFU; 
-       *b++ = (drops >> 32) & 0xFFU; 
-       *b++ = (drops >> 24) & 0xFFU; 
-       *b++ = (drops >> 16) & 0xFFU; 
-       *b++ = (drops >> 8) & 0xFFU; 
-       *b++ = (drops >> 0) & 0xFFU; 
+       *b++ = 0b01000000 + ((fraction_part >> 56) & 0b00111111); 
+       *b++ = (fraction_part >> 48) & 0xFFU; 
+       *b++ = (fraction_part >> 40) & 0xFFU; 
+       *b++ = (fraction_part >> 32) & 0xFFU; 
+       *b++ = (fraction_part >> 24) & 0xFFU; 
+       *b++ = (fraction_part >> 16) & 0xFFU; 
+       *b++ = (fraction_part >> 8) & 0xFFU; 
+       *b++ = (fraction_part >> 0) & 0xFFU; 
    }        
 
     uint32_t current_ledger =  ledger_seq();
