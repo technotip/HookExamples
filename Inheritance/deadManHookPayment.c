@@ -13,10 +13,8 @@ int64_t hook(uint32_t reserved) {
 
     if(BUFFER_EQUAL_20(activity, hook_acc)) {
         uint32_t current_ledger = ledger_seq();
-
         if (state_set(SVAR(current_ledger), "LAST", 4) != 4)
             NOPE("Inheritance: Could not set recent activity state entry, bailing.");    
-
     }
 
     DONE("Inheritance: Payment Successful.");    

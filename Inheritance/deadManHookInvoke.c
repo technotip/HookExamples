@@ -29,7 +29,7 @@ uint8_t txn[229] =
 #define FEE_OUT (txn + 26U) 
 #define ACCOUNT_OUT (txn + 71U) 
 #define RKEY_OUT (txn + 93U) 
-#define EMIT_OUT (txn + 113U) 
+#define EMIT_OUT (txn + 116U) 
 
 int64_t hook(uint32_t reserved) {
 
@@ -51,7 +51,7 @@ int64_t hook(uint32_t reserved) {
     otxn_field(SBUF(trigger_acc), sfAccount);
     hook_account(ACCOUNT_OUT, 20);
 
-    if( flag[0] == 0 )
+    if( flag[0] == 0x00U )
     {
             if(!BUFFER_EQUAL_20(trigger_acc, ACCOUNT_OUT)) 
                 NOPE("Inheritance: You are not authorized to do this.");
@@ -113,7 +113,7 @@ int64_t hook(uint32_t reserved) {
     if (state(SVAR(last), "LAST", 4) != 4)
         NOPE("Inheritance: Could not retrieve last interaction state entry, bailing.");    
 
-   if( flag[0] == 01 ) {
+   if( flag[0] == 0x01U ) {
         if (state(SVAR(ledgr_interval), "L1", 2) != 4)
             NOPE("Inheritance: Could not retrieve ledger interval state entry, bailing.");  
 TRACEVAR(ledgr_interval);
@@ -122,7 +122,18 @@ TRACEVAR(ledgr_interval);
                             
         if(BUFFER_EQUAL_20(trigger_acc, RKEY_OUT)) {
             uint32_t lgr_elapsed = last + ledgr_interval;
-            SET_MSG(lgr_elapsed, current_ledger);
+            if (lgr_elapsed < current_ledger)
+            {
+                lgr_elapsed = lgr_elapsed - current_ledger;
+                msg_buf[14] += (lgr_elapsed / 1000000) % 10;
+                msg_buf[15] += (lgr_elapsed / 100000) % 10;
+                msg_buf[16] += (lgr_elapsed / 10000) % 10;
+                msg_buf[17] += (lgr_elapsed / 1000) % 10;
+                msg_buf[18] += (lgr_elapsed / 100) % 10;
+                msg_buf[19] += (lgr_elapsed / 10) % 10;
+                msg_buf[20] += (lgr_elapsed) % 10;
+                NOPE(msg_buf);
+            }
         }  else {
             NOPE("Inheritance: You are not authorized to take this action.");
         }       
@@ -131,7 +142,7 @@ TRACEVAR(ledgr_interval);
     if (state(SVAR(ledgr_interval), "L2", 2) != 4)
         NOPE("Inheritance: Could not retrieve ledger interval state entry, bailing.");    
 
-   if( flag[0] == 02) {
+   if( flag[0] == 0x02U ) {
  
         if (state(RKEY_OUT, 20, "S", 1) != 20)
             NOPE("Inheritance: Could not retrieve second nominee state entry, bailing."); 
@@ -155,13 +166,24 @@ TRACEVAR(ledgr_interval);
         }           
    }
 
-   if(flag[0] == 03) {
+   if(flag[0] == 0x03U ) {
         if (state(RKEY_OUT, 20, "T", 1) != 20)
             NOPE("Inheritance: Could not retrieve third nominee state entry, bailing.");   
 
         if(BUFFER_EQUAL_20(trigger_acc, RKEY_OUT)) {
             uint32_t lgr_elapsed = last + ledgr_interval;
-            SET_MSG(lgr_elapsed, current_ledger);
+            if (lgr_elapsed < current_ledger)
+            {
+                lgr_elapsed = lgr_elapsed - current_ledger;
+                msg_buf[14] += (lgr_elapsed / 1000000) % 10;
+                msg_buf[15] += (lgr_elapsed / 100000) % 10;
+                msg_buf[16] += (lgr_elapsed / 10000) % 10;
+                msg_buf[17] += (lgr_elapsed / 1000) % 10;
+                msg_buf[18] += (lgr_elapsed / 100) % 10;
+                msg_buf[19] += (lgr_elapsed / 10) % 10;
+                msg_buf[20] += (lgr_elapsed) % 10;
+                NOPE(msg_buf);
+            }
         } else {
             NOPE("Inheritance: You are not authorized to take this action.");
         }           
@@ -170,7 +192,7 @@ TRACEVAR(ledgr_interval);
 
     *((uint32_t *)(FLS_OUT)) = FLIP_ENDIAN(fls);
     *((uint32_t *)(LLS_OUT)) = FLIP_ENDIAN(lls);
-    etxn_details(EMIT_OUT, 113U);
+    etxn_details(EMIT_OUT, 116U);
     {
         int64_t fee = etxn_fee_base(SBUF(txn));
         uint8_t *b = FEE_OUT;
@@ -183,7 +205,7 @@ TRACEVAR(ledgr_interval);
         *b++ = (fee >> 8) & 0xFFU;
         *b++ = (fee >> 0) & 0xFFU;
     }
-
+    TRACEHEX(txn);
     if (emit(SBUF(emithash), SBUF(txn)) != 32)
         NOPE("Inheritance: Failed To Emit.");                              
 
