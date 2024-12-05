@@ -25,7 +25,7 @@ Users begin by installing two hook hashes into their account.
 The next step involves setting up the nominee hierarchy and specifying access rules through the following parameters:
 
 - **Primary Nominee:** The first account that can take control.
-- **Second and Third Nominees:** Backup accounts that can take over after the primary or in case primary nominee looses access to their own account.
+- **Second and Third Nominees:** Backup accounts that can take over after the primary (or in case primary nominee looses access to their own account.)
 - **Ledger Intervals:**
   - **First Ledger Interval:** Time when the primary nominee can assign their account as a regular key.
   - **Second Ledger Interval:** Time when the second and third nominees can assign their accounts as regular key.
