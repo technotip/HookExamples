@@ -4,6 +4,20 @@
 #define NOPE(x) rollback(SBUF(x), __LINE__)
 uint8_t msg_buf[30] = "You must wait 0000000 ledgers.";
 
+#define SET_MSG(current_ledger, lgr_elapsed) \
+if ((current_ledger) < (lgr_elapsed)) \
+{ \
+    (lgr_elapsed) = (lgr_elapsed) - (current_ledger); \
+    msg_buf[14] += ((lgr_elapsed) / 1000000) % 10; \
+    msg_buf[15] += ((lgr_elapsed) / 100000) % 10; \
+    msg_buf[16] += ((lgr_elapsed) / 10000) % 10; \
+    msg_buf[17] += ((lgr_elapsed) / 1000) % 10; \
+    msg_buf[18] += ((lgr_elapsed) / 100) % 10; \
+    msg_buf[19] += ((lgr_elapsed) / 10) % 10; \
+    msg_buf[20] += ((lgr_elapsed)) % 10; \
+    NOPE(msg_buf); \
+}
+
 // clang-format off 
 uint8_t txn[229] =
 {
@@ -38,18 +52,13 @@ int64_t hook(uint32_t reserved) {
     if (otxn_param(SBUF(flag), "F", 1) != 1)
         NOPE("Inheritance: No Action Specified.");
 
-    TRACEHEX(flag);
-
     uint32_t current_ledger = ledger_seq();
-    uint32_t fls = current_ledger + 1;
-    uint32_t lls = fls + 4;
-    etxn_reserve(1);
-    uint8_t emithash[32];    
-
-
     uint8_t trigger_acc[20];
     otxn_field(SBUF(trigger_acc), sfAccount);
     hook_account(ACCOUNT_OUT, 20);
+
+    if( flag[0] > 0x03U || flag[0] < 0x00U) 
+        NOPE("Inheritance: Wrong Action Specified.");
 
     if( flag[0] == 0x00U )
     {
@@ -79,7 +88,6 @@ int64_t hook(uint32_t reserved) {
 
             if (state_set(SBUF(third), "T", 1) != 20)
                 NOPE("Inheritance: Could not update third nominee state entry, bailing.");  
-
 
             if(BUFFER_EQUAL_20(primary, third) || BUFFER_EQUAL_20(second, third)) 
                 NOPE("Inheritance: You can't repeat nominees.");                   
@@ -116,51 +124,28 @@ int64_t hook(uint32_t reserved) {
    if( flag[0] == 0x01U ) {
         if (state(SVAR(ledgr_interval), "L1", 2) != 4)
             NOPE("Inheritance: Could not retrieve ledger interval state entry, bailing.");  
-TRACEVAR(ledgr_interval);
+
         if (state(RKEY_OUT, 20, "P", 1) != 20)
             NOPE("Inheritance: Could not retrieve primary nominee state entry, bailing."); 
                             
         if(BUFFER_EQUAL_20(trigger_acc, RKEY_OUT)) {
             uint32_t lgr_elapsed = last + ledgr_interval;
-            if (lgr_elapsed < current_ledger)
-            {
-                lgr_elapsed = lgr_elapsed - current_ledger;
-                msg_buf[14] += (lgr_elapsed / 1000000) % 10;
-                msg_buf[15] += (lgr_elapsed / 100000) % 10;
-                msg_buf[16] += (lgr_elapsed / 10000) % 10;
-                msg_buf[17] += (lgr_elapsed / 1000) % 10;
-                msg_buf[18] += (lgr_elapsed / 100) % 10;
-                msg_buf[19] += (lgr_elapsed / 10) % 10;
-                msg_buf[20] += (lgr_elapsed) % 10;
-                NOPE(msg_buf);
-            }
+            SET_MSG (current_ledger, lgr_elapsed);
         }  else {
             NOPE("Inheritance: You are not authorized to take this action.");
         }       
    }
 
+    uint32_t lgr_elapsed = last + ledgr_interval;
     if (state(SVAR(ledgr_interval), "L2", 2) != 4)
         NOPE("Inheritance: Could not retrieve ledger interval state entry, bailing.");    
 
    if( flag[0] == 0x02U ) {
- 
-        if (state(RKEY_OUT, 20, "S", 1) != 20)
+         if (state(RKEY_OUT, 20, "S", 1) != 20)
             NOPE("Inheritance: Could not retrieve second nominee state entry, bailing."); 
 
         if(BUFFER_EQUAL_20(trigger_acc, RKEY_OUT)) {
-            uint32_t lgr_elapsed = last + ledgr_interval;
-            if (lgr_elapsed < current_ledger)
-            {
-                lgr_elapsed = lgr_elapsed - current_ledger;
-                msg_buf[14] += (lgr_elapsed / 1000000) % 10;
-                msg_buf[15] += (lgr_elapsed / 100000) % 10;
-                msg_buf[16] += (lgr_elapsed / 10000) % 10;
-                msg_buf[17] += (lgr_elapsed / 1000) % 10;
-                msg_buf[18] += (lgr_elapsed / 100) % 10;
-                msg_buf[19] += (lgr_elapsed / 10) % 10;
-                msg_buf[20] += (lgr_elapsed) % 10;
-                NOPE(msg_buf);
-            }
+            SET_MSG (current_ledger, lgr_elapsed);
         } else {
             NOPE("Inheritance: You are not authorized to take this action.");
         }           
@@ -171,25 +156,15 @@ TRACEVAR(ledgr_interval);
             NOPE("Inheritance: Could not retrieve third nominee state entry, bailing.");   
 
         if(BUFFER_EQUAL_20(trigger_acc, RKEY_OUT)) {
-            uint32_t lgr_elapsed = last + ledgr_interval;
-            if (lgr_elapsed < current_ledger)
-            {
-                lgr_elapsed = lgr_elapsed - current_ledger;
-                msg_buf[14] += (lgr_elapsed / 1000000) % 10;
-                msg_buf[15] += (lgr_elapsed / 100000) % 10;
-                msg_buf[16] += (lgr_elapsed / 10000) % 10;
-                msg_buf[17] += (lgr_elapsed / 1000) % 10;
-                msg_buf[18] += (lgr_elapsed / 100) % 10;
-                msg_buf[19] += (lgr_elapsed / 10) % 10;
-                msg_buf[20] += (lgr_elapsed) % 10;
-                NOPE(msg_buf);
-            }
+            SET_MSG (current_ledger, lgr_elapsed);
         } else {
             NOPE("Inheritance: You are not authorized to take this action.");
         }           
    }
 
-
+    etxn_reserve(1);
+    uint32_t fls = current_ledger + 1;
+    uint32_t lls = fls + 4;
     *((uint32_t *)(FLS_OUT)) = FLIP_ENDIAN(fls);
     *((uint32_t *)(LLS_OUT)) = FLIP_ENDIAN(lls);
     etxn_details(EMIT_OUT, 116U);
@@ -206,11 +181,14 @@ TRACEVAR(ledgr_interval);
         *b++ = (fee >> 0) & 0xFFU;
     }
     TRACEHEX(txn);
+    uint8_t emithash[32];  
     if (emit(SBUF(emithash), SBUF(txn)) != 32)
-        NOPE("Inheritance: Failed To Emit.");                              
+        NOPE("Inheritance: Failed To Emit.");
 
+    if (state_set(SVAR(current_ledger), "LAST", 4) != 4)
+        NOPE("Inheritance: Could not set recent activity state entry, bailing.");                                        
 
-    DONE("Inheritance: Ledger Interval Set.");    
+    DONE("Inheritance: RegularKey Set Successfully.");    
     _g(1,1);
     return 0;       
 }
