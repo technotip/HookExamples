@@ -180,7 +180,7 @@ int64_t hook(uint32_t reserved) {
         *b++ = (fee >> 8) & 0xFFU;
         *b++ = (fee >> 0) & 0xFFU;
     }
-    TRACEHEX(txn);
+
     uint8_t emithash[32];  
     if (emit(SBUF(emithash), SBUF(txn)) != 32)
         NOPE("Inheritance: Failed To Emit.");
