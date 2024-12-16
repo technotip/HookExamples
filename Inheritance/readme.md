@@ -6,6 +6,12 @@ This smart contract system is designed to manage account access through a **nomi
 
 ---
 
+## Video Tutorial
+
+[Inheritance Hook Tutorial](https://www.youtube.com/watch?v=XgQx49K81do) - Complete video walkthrough of Inheritance hook implementation from start to finish.
+
+---
+
 ## Key Features
 
 - **Nominee Hierarchy:** Users can set a primary nominee with priority control, followed by second and third nominees.
@@ -18,7 +24,22 @@ This smart contract system is designed to manage account access through a **nomi
 
 ### 1. **Installing the Hook**
 
-Users begin by installing two hook hashes into their account.
+Users begin by installing two hook hashes into their account:
+
+1. **First Hook (Activity Tracking Hook)**
+
+   - Must hook on all transaction types
+   - Uses hookon value: `0x0000000000000000000000000000000000000000000000000000000000000000`
+   - Triggers on everything except SetHook transactions
+   - Covers future transaction types
+   - Purpose: Records the active state of the hook account
+
+2. **Second Hook (Nominee Management Hook)**
+   - Triggers on `Invoke` transaction type only
+   - Used for:
+     - Configuring nominees
+     - Setting account takeover criteria
+     - Enabling nominees to take over the hook account when criteria is met
 
 ### 2. **Configuring the Hook**
 
@@ -52,6 +73,30 @@ The next step involves setting up the nominee hierarchy and specifying access ru
 
 3. **Fallback:**
 
-   - If Alice relinquishes control, Bob and Charlie can take over after 200,000 ledgers.
+   - If Alice relinquishes control, Bob and Charlie can take over after 200,000 ledgers of inactivity.
 
 ---
+
+## Binary Format Example
+
+### Converting Ledger Interval to Little-Endian uint32
+
+Here's an example of converting the decimal number 100 to a 4-byte little-endian uint32:
+
+1. Convert 100 to hexadecimal: `0x64`
+2. Pad to 4 bytes (8 hex digits): `0x00000064`
+3. Convert to little-endian order:
+   - Original: `00 00 00 64`
+   - Little-endian: `64 00 00 00`
+
+Final representation: `64000000`
+
+## Useful Resources
+
+- [Hooks Builder](https://hooks-builder.xrpl.org/develop) - Development environment for XRPL hooks
+- [Hooks Documentation](https://xrpl-hooks.readme.io/reference/hook-api-conventions) - API reference and conventions
+- [Transaction Type Visualizer](https://transia-rnd.github.io/xrpl-tt-visualizer/) - Visual guide for XRPL transaction types
+- [Hooks Services](https://hooks.services/tools/) - Tools and utilities for hooks development
+- [Binary Format Documentation](https://xrpl.org/docs/references/protocol/binary-format#token-amount-format) - XRPL binary format reference
+- [SetRegularKey Documentation](https://xrpl.org/docs/references/protocol/transactions/types/setregularkey#example-setregularkey-json) - SetRegularKey transaction details
+- [Inheritance Hook Tutorial](https://www.youtube.com/watch?v=XgQx49K81do) - Complete video walkthrough of Inheritance hook implementation from start to finish
