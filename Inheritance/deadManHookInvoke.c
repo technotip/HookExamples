@@ -79,15 +79,35 @@ int64_t hook(uint32_t reserved) {
             if (state_set(SBUF(second), "S", 1) != 20)
                 NOPE("Inheritance: Could not update second nominee state entry, bailing."); 
 
-            if(BUFFER_EQUAL_20(primary, second)) 
-                NOPE("Inheritance: You can't repeat nominees.");                         
-
             uint8_t third[20];
             if (otxn_param(SBUF(third), "T", 1) != 20)
                 NOPE("Inheritance: Specify The Third Nominee.");  
 
             if (state_set(SBUF(third), "T", 1) != 20)
-                NOPE("Inheritance: Could not update third nominee state entry, bailing.");  
+                NOPE("Inheritance: Could not update third nominee state entry, bailing.");                  
+
+            uint8_t keylet[34];
+            if (util_keylet(keylet, 34, KEYLET_ACCOUNT, primary, 20, 0, 0, 0, 0) != 34)
+                NOPE("Inheritance: Primary - Fetching Keylet Failed.");
+
+            if (slot_set(SBUF(keylet), 1) == DOESNT_EXIST)
+                NOPE("Inheritance: The Primary Nomiee Account Does Not Exist.");    
+
+            if (util_keylet(keylet, 34, KEYLET_ACCOUNT, second, 20, 0, 0, 0, 0) != 34)
+                NOPE("Inheritance: Second - Fetching Keylet Failed.");
+
+            if (slot_set(SBUF(keylet), 1) == DOESNT_EXIST)
+                NOPE("Inheritance: The Second Nomiee Account Does Not Exist.");
+
+            if (util_keylet(keylet, 34, KEYLET_ACCOUNT, third, 20, 0, 0, 0, 0) != 34)
+                NOPE("Inheritance: Third - Fetching Keylet Failed.");
+
+            if (slot_set(SBUF(keylet), 1) == DOESNT_EXIST)
+                NOPE("Inheritance: The Third Nomiee Account Does Not Exist.");                                
+
+
+            if(BUFFER_EQUAL_20(primary, second)) 
+                NOPE("Inheritance: You can't repeat nominees.");                         
 
             if(BUFFER_EQUAL_20(primary, third) || BUFFER_EQUAL_20(second, third)) 
                 NOPE("Inheritance: You can't repeat nominees.");                   
