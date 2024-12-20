@@ -8,26 +8,26 @@ This smart contract system consists of two hooks that work together to enable au
 
 ## System Components
 
-### 1. Requesting Hook (Hook 1)
+### 1. Requesting Account (Hook 1)
 
 Installed on accounts that need automatic topups.
 
 **Hook Parameters:**
 
 - `D`: Destination account address (the funding account to request XAH from)
-- `A`: Minimum balance threshold (triggers request when balance falls below this amount)
+- `A`: Minimum balance threshold (triggers request when the requesting account's balance falls below this amount)
 
 **Transaction Type:**
 
 - HookOn to Payment transaction.
 
-### 2. Funding Hook (Hook 2)
+### 2. Funding Account (Hook 2)
 
 Installed on account that provide XAH to requesting accounts.
 
 **Hook Parameters:**
 
-- `B`: Global balance threshold (the requesting account can request topup only when the balance is below this threshold)
+- `B`: Global balance threshold (the requesting accounts can request topup only when their balance is below this threshold)
 
 **Transaction Type:**
 
@@ -57,9 +57,10 @@ Installed on account that provide XAH to requesting accounts.
 ### Important:
 
 - The funding account must have enough XAH to cover all requests.
-- Care must be taken while setting the global balance threshold(HookParameter B) of the funding account, and the minimum balance threshold(HookParameter A) of the requesting account. It's recommended to set them equal to each other.
+- Care must be taken while setting the global balance threshold(HookParameter B) of the funding account, and the minimum balance threshold(HookParameter A) of the requesting account. It's recommended to set them equal to each other. Or the requesting accounts balance threshold must be equal or less than the global request amount of the fuding account.
 
 Example:
+
 Case 1:
 Hook 2: Global request amount = 100 XAH, Hook 1: Minimum balance threshold = 99 XAH.
 Then the topup can be successful.
@@ -82,26 +83,26 @@ Then the topup will fail.
 
 ## Use Case Example
 
-1. Requesting account has 100 XAH
+1. Requesting account has 100 XAH. And it's threshold is set to 100 XAH.
 2. Funding account sets global threshold (`B`) to 100 XAH
 3. When requesting account's balance drops below its configured threshold (`A`) i.e., 100 XAH
 4. Request is only processed if current balance < global threshold (`B`) i.e., 100 XAH
-5. Funding account sends pre-configured amount (`A`)
+5. Funding account sends pre-configured amount (`A`), to the requesting account.
 
 ---
 
 ## Important Notes
 
-- Funding accounts can whitelist multiple requesting accounts.
-- Each whitelisted account can have its own topup amount.
+- Funding account can whitelist multiple requesting accounts.
+- Each whitelisted account can have its own topup amount configured by funding account.
 - Requests are only processed if the requesting account's balance is below both its local threshold(set be requesting account) and the global threshold(set by funding account).
 - The system provides automated liquidity management for accounts that need to maintain minimum balances.
 
 ---
 
-### UseCase Example:
+### Use Case Example:
 
-Authorize and automatically top-up Evernode instances(subscription-like)
+Authorize and automatically top-up Evernode instances(subscription or pull payment).
 
 ## Related Files
 
