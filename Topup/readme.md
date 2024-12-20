@@ -79,6 +79,8 @@ Then the topup will fail.
 
 ---
 
+![Topup Hook Pull Payment System](images/topup-hook-pullpayment.png)
+
 ---
 
 ## Use Case Example
@@ -103,6 +105,17 @@ Then the topup will fail.
 ### Use Case Example:
 
 Authorize and automatically top-up Evernode instances(subscription or pull payment).
+
+---
+
+### Tips for people who want to build an UI for this system
+
+While installing the hook, make sure you don't overrite the existing hook.
+When the user inputs their raddress, check their account_objects for type hook. If there are hooks already installed, then leave those many hook positions while installing the new hook.
+
+Also give optin to uninstall or delete the hook. Please remove the hook based on the hook position and also after checking the hookhash.
+
+---
 
 ## Related Files
 
