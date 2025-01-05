@@ -113,7 +113,7 @@ Authorize and automatically top-up Evernode instances(subscription or pull payme
 While installing the hook, make sure you don't overrite the existing hook.
 When the user inputs their raddress, check their account_objects for type hook. If there are hooks already installed, then leave those many hook positions while installing the new hook.
 
-Also give optin to uninstall or delete the hook. Please remove the hook based on the hook position and also after checking the hookhash.
+Also give option to uninstall or delete the hook. Please remove the hook based on the hook position and also after checking the hookhash.
 
 ---
 

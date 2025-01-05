@@ -52,7 +52,13 @@ int64_t hook(uint32_t reserved) {
         slot_subfield(1, sfBalance, 1);
         int64_t balance = slot_float(1);
 
-        if(float_compare(balance, amt_param, COMPARE_LESS) == 1) {
+        int64_t amount;
+        if(otxn_field(SVAR(amount), sfAmount) != 8)
+         DONE("Topup: Non XAH Transaction Successful.");        
+
+        int64_t final =  float_sum(balance, amount);
+
+        if(float_compare(final, amt_param, COMPARE_LESS) == 1) {
             etxn_reserve(1);
             uint32_t current_ledger = ledger_seq();
             uint32_t fls = current_ledger + 1;
