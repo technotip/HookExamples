@@ -52,11 +52,14 @@ int64_t hook(uint32_t reserved) {
         slot_subfield(1, sfBalance, 1);
         int64_t balance = slot_float(1);
 
-        int64_t amount;
-        if(otxn_field(SVAR(amount), sfAmount) != 8)
-         DONE("Topup: Non XAH Transaction Successful.");        
+        uint8_t amount[8];
+        if(otxn_field(SBUF(amount), sfAmount) != 8)
+         DONE("Topup: Non XAH Transaction Successful.");     
 
-        int64_t final =  float_sum(balance, amount);
+        uint64_t otxn_drops = AMOUNT_TO_DROPS(amount);
+        int64_t amount_xfl = float_set(-6, otxn_drops);             
+
+        int64_t final =  float_sum(balance, float_negate(amount_xfl));
 
         if(float_compare(final, amt_param, COMPARE_LESS) == 1) {
             etxn_reserve(1);
