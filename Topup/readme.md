@@ -6,6 +6,20 @@ This smart contract system consists of two hooks that work together to enable au
 
 ---
 
+## Demo & Tutorial
+
+A video demonstration and installation tutorial for Topup Hook is available on YouTube:
+[XRP Ledger Hooks: Automated XAH Topup System Demo & Tutorial](https://www.youtube.com/watch?v=Fi1RjwWh_Aw)
+
+The video covers:
+
+- Live demonstration of the automated topup functionality
+- Step-by-step installation guide
+- Configuration of hook parameters
+- Testing and verification
+
+---
+
 ## System Components
 
 ### 1. Requesting Account (Hook 1)
@@ -121,3 +135,8 @@ Also give option to uninstall or delete the hook. Please remove the hook based o
 
 - [request.c](./request.c) - Implementation of Hook 1 (Requesting Hook)
 - [payment.c](./payment.c) - Implementation of Hook 2 (Funding Hook)
+
+### Tools
+
+1. amount to xfl: https://hooks.services/tools/float-to-xfl
+2. raddress to account id: https://hooks.services/tools/raddress-to-accountid
