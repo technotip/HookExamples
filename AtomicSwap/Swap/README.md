@@ -53,5 +53,5 @@ All incoming transactions must include an InvoiceID, which is carried forward to
 
 - If any parameter is missing or misconfigured, the hook will reject the transaction
 - If the transaction lacks an InvoiceID, it is rejected
-- If the sender is not authorized (not EUR_W for EUR payments or not ETB issuer for ETB payments), the transaction is ignored
+- If the sender is not authorized (not EUR_W for EUR payments or not ETB issuer for ETB payments), the transaction is simply accepted.
 - If the transaction currency/issuer doesn't match the configured parameters, it is ignored
