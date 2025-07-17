@@ -1,6 +1,6 @@
 # AtomicSwap Hook
 
-This hook enables atomic swaps between EUR and ETB currencies on the XRPL, using custom issuers and a fixed conversion rate.
+This hook enables atomic swaps between EUR and ETB currencies on the Xahau, using custom issuers and a fixed conversion rate.
 
 ## Important
 

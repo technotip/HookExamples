@@ -95,10 +95,10 @@ int64_t hook(uint32_t reserved) {
     
     if(float_compare(balance, swap_amount, COMPARE_LESS) == 1) {
         if(float_sto(AMOUNT_OUT,  49, eur_currency, 20, eur_issuer, 20, amount_xfl, sfAmount) < 0) 
-            rollback(SBUF("Atomic Swap: Wrong AMT - < xlf 8b req amount, 20b currency, 20b issuer >"), 7);
+            NOPE("Not enough balance.");
     } else {
         if(float_sto(AMOUNT_OUT,  49, etb_currency, 20, etb_issuer, 20, swap_amount, sfAmount) < 0) 
-            rollback(SBUF("Atomic Swap: Wrong AMT - < xlf 8b req amount, 20b currency, 20b issuer >"), 7);
+            NOPE("Atomic Swap: Wrong AMT - < xlf 8b req amount, 20b currency, 20b issuer >");
     }
                   
     etxn_reserve(1);
