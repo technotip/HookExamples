@@ -41,7 +41,6 @@ uint8_t txn[312] =
 #define EMIT_OUT   (txn + 196U) 
 #define INVOICE_ID_OUT (txn + 27U) 
 
-
 int64_t hook(uint32_t reserved) {
     uint32_t current_ledger = ledger_seq();
 
@@ -59,15 +58,15 @@ int64_t hook(uint32_t reserved) {
 
     uint8_t etb_currency[20];
     if(hook_param(SBUF(etb_currency), "ETB_C", 5) != 20)
-        NOPE("Misconfigured. ETB currency not set as Hook Parameter.");               
+        NOPE("Misconfigured. ETB currency not set as Hook Parameter.");   
+        
+    if(hook_param(DEST_ACC, 20, "ETB_W", 5) != 20)
+        NOPE("Misconfigured. Whitelisted account not set as Hook Parameter.");          
 
     uint64_t conversion_rate;
     if(hook_param(SVAR(conversion_rate), "R", 1) != 8)
         NOPE("Misconfigured. Conversion rate not set as Hook Parameter.");   
 
-    uint8_t eur_whitelisted_accounts[20];
-    if(hook_param(SBUF(eur_whitelisted_accounts), "EUR_W", 5) != 20)
-        NOPE("Misconfigured. Whitelisted accounts not set as Hook Parameter.");   
 
     uint8_t account[20];
     otxn_field(SBUF(account), sfAccount);
@@ -77,46 +76,39 @@ int64_t hook(uint32_t reserved) {
         DONE("Outgoing Transaction.");    
 
     if(otxn_field(INVOICE_ID_OUT, 32, sfInvoiceID) != 32)
-        NOPE("No Invoice ID passed.");    // Check if we have to just accept this instead.
+        NOPE("No Invoice ID passed.");
 
     uint8_t amount[48];
-    if(otxn_field(amount, 48, sfAmount) != 48) // < xlf 8b req amount, 20b currency, 20b issuer >       
+    if(otxn_field(amount, 48, sfAmount) != 48)      
         DONE("Probably XAH Transaction.");
 
     int64_t amount_xfl = float_sto_set(amount, 8); 
 
-    if(BUFFER_EQUAL_20(eur_whitelisted_accounts, account)){
-        if (!BUFFER_EQUAL_20(amount + 28, eur_issuer)) 
-            DONE("Incoming Transaction.");  
-        
-        if (!BUFFER_EQUAL_20(amount + 8, eur_currency)) 
-            DONE("Incoming Transaction.");   
+    if (!BUFFER_EQUAL_20(amount + 28, eur_issuer)) 
+        NOPE("Issuer mismatch.");  
+    
+    if (!BUFFER_EQUAL_20(amount + 8, eur_currency)) 
+        NOPE("Currency mismatch.");   
 
-        int64_t swap_amount = float_multiply(amount_xfl, conversion_rate);
+    int64_t swap_amount = float_multiply(amount_xfl, conversion_rate);
 
-        if(hook_param(DEST_ACC, 20, "ETB_W", 5) != 20)
-            NOPE("Misconfigured. Whitelisted account not set as Hook Parameter.");           
+    uint8_t keylet[34];
+    if (util_keylet(SBUF(keylet), KEYLET_LINE, HOOK_ACC, 20, etb_issuer, 20, etb_currency, 20) != 34)
+        NOPE("Topup: Fetching Keylet Failed.");
 
-        if(float_sto(AMOUNT_OUT,  49, etb_currency, 20, DEST_ACC, 20, swap_amount, sfAmount) < 0) 
-            rollback(SBUF("Atomic Swap: Wrong AMT - < xlf 8b req amount, 20b currency, 20b issuer >"), 7);            
-    } else if(BUFFER_EQUAL_20(etb_issuer, account)){
-        if (!BUFFER_EQUAL_20(amount + 28, etb_issuer)) 
-            DONE("Incoming Transaction.");  
-        
-        if (!BUFFER_EQUAL_20(amount + 8, etb_currency)) 
-            DONE("Incoming Transaction.");   
+    slot_set(SBUF(keylet), 1);
+    slot_subfield(1, sfBalance, 1);
+    uint64_t balance = slot_float(1);
 
-        int64_t swap_amount = float_divide(amount_xfl, conversion_rate);
-
-        if(hook_param(DEST_ACC, 20, "EUR_W", 5) != 20)
-            NOPE("Misconfigured. Whitelisted accounts not set as Hook Parameter.");           
-
-        if(float_sto(AMOUNT_OUT,  49, eur_currency, 20, eur_issuer, 20, swap_amount, sfAmount) < 0) 
-            rollback(SBUF("Atomic Swap: Wrong AMT - < xlf 8b req amount, 20b currency, 20b issuer >"), 7);            
+    if(float_sign(balance))
+      balance = float_negate(balance);
+    
+    if(float_compare(balance, swap_amount, COMPARE_LESS) == 1) {
+        NOPE("Not enough balance ETB balance to swap.");
     } else {
-        DONE("Incoming Transaction.");
-    }
-
+        if(float_sto(AMOUNT_OUT,  49, etb_currency, 20, DEST_ACC, 20, swap_amount, sfAmount) < 0) 
+            NOPE("Atomic Swap: Wrong AMT - < xlf 8b req amount, 20b currency, 20b issuer >");  
+    }    
 
     etxn_reserve(1);
     uint32_t fls = (uint32_t)ledger_seq() + 1;
@@ -136,7 +128,7 @@ int64_t hook(uint32_t reserved) {
         *b++ = (fee >> 8) & 0xFFU;
         *b++ = (fee >> 0) & 0xFFU;
     }
-    TRACEHEX(txn);
+
     uint8_t emithash[32]; 
     if(emit(SBUF(emithash), SBUF(txn)) != 32)
         rollback(SBUF("Failed To Emit."), 12);           

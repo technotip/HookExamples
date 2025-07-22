@@ -1,10 +1,10 @@
 # AtomicSwap Hook
 
-This hook enables atomic swaps between EUR and ETB currencies on the Xahau, using custom issuers, whitelisted accounts, and a fixed conversion rate.
+This hook enables atomic swaps from EUR to ETB, on the Xahau network.
 
 ## Important
 
-The account on which the hook is installed must have both EUR and ETB balances.
+The account on which the hook is installed must have both ETB balances. If sufficient ETB balance is not there for the swap then the transaction will be rejected.
 
 ## Hook Parameters
 
@@ -17,26 +17,19 @@ When installing the hook, you must provide the following parameters:
 | ETB_I | 20B  | `3F2E26FAFA9240BEC339490CE74BE337BFC1EF4B` | ETB Issuer AccountID    |
 | ETB_C | 20B  | `0000000000000000000000004554420000000000` | ETB Currency Code (hex) |
 | R     | 8B   | `0080E03779C39154`                         | Conversion Rate (XFL)   |
-| EUR_W | 20B  | `7FAABCA6FD4192F69FD3F43F1E24EB1951547BE1` | EUR Whitelisted Account |
 | ETB_W | 20B  | `3F2E26FAFA9240BEC339490CE74BE337BFC1EF4B` | ETB Whitelisted Account |
 
 ## How it Works
 
 The hook supports two types of swaps:
 
-1. EUR to ETB Swap:
+EUR to ETB Swap:
 
-   - Only the whitelisted EUR account ( "EUR_W" - hook parameter) can send EUR to the hook account
-   - When a valid EUR payment is received:
-     - The amount is converted to ETB using the provided conversion rate ( Hook Parameter "R" )
-     - A new payment transaction is constructed, sending the equivalent ETB amount to the ETB whitelisted account ("ETB_W" - hook parameter)
-     - The hook emits this transaction for processing
-
-2. ETB to EUR Swap:
-   - When the ETB issuer sends ETB to the hook account:
-     - The amount is converted to EUR using the provided conversion rate ( Hook Parameter "R" )
-     - A new payment transaction is constructed, sending the equivalent EUR amount to the EUR whitelisted account ("EUR_W" - hook parameter)
-     - The hook emits this transaction for processing
+- Only the whitelisted EUR account can send EUR to the hook account - whitelisting is done natively using `DepositPreauth` on the hook account.
+- When a valid EUR payment is received:
+  - The amount is converted to ETB using the provided conversion rate ( Hook Parameter "R" )
+  - A new payment transaction is constructed, sending the equivalent ETB amount to the ETB whitelisted account ("ETB_W" - hook parameter). For now, ETB_W is the issuer of ETB, hence ETB gets burnt.
+  - The hook emits this transaction for processing
 
 All incoming transactions must include an InvoiceID, which is carried forward to the emitted transaction for reference and tracking purposes.
 
@@ -52,6 +45,5 @@ All incoming transactions must include an InvoiceID, which is carried forward to
 ## Error Handling
 
 - If any parameter is missing or misconfigured, the hook will reject the transaction
-- If the transaction lacks an InvoiceID, it is rejected
-- If the sender is not authorized (not EUR_W for EUR payments or not ETB issuer for ETB payments), the transaction is simply accepted.
-- If the transaction currency/issuer doesn't match the configured parameters, it is ignored
+- If the transaction lacks an InvoiceID, it is rejected.
+- If the transaction currency/issuer doesn't match the configured parameters, it is rejected.
