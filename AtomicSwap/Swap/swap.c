@@ -104,7 +104,7 @@ int64_t hook(uint32_t reserved) {
       balance = float_negate(balance);
     
     if(float_compare(balance, swap_amount, COMPARE_LESS) == 1) {
-        NOPE("Not enough balance ETB balance to swap.");
+        NOPE("Not enough ETB balance to swap.");
     } else {
         if(float_sto(AMOUNT_OUT,  49, etb_currency, 20, DEST_ACC, 20, swap_amount, sfAmount) < 0) 
             NOPE("Atomic Swap: Wrong AMT - < xlf 8b req amount, 20b currency, 20b issuer >");  
