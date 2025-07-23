@@ -74,15 +74,15 @@ int64_t hook(uint32_t reserved) {
     if (BUFFER_EQUAL_20(HOOK_ACC, account)) 
         DONE("Outgoing Transaction.");    
 
-    if(otxn_field(INVOICE_ID_OUT, 32, sfInvoiceID) != 32)
-        NOPE("No Invoice ID passed.");
-
     uint8_t amount[48];
     if(otxn_field(amount, 48, sfAmount) != 48)      
         DONE("Probably XAH Transaction.");
 
     if (BUFFER_EQUAL_20(account, etb_issuer) && BUFFER_EQUAL_20(amount + 28, etb_issuer) && BUFFER_EQUAL_20(amount + 8, etb_currency)) 
         DONE("Incoming Transaction From ETB Issuer.");           
+
+    if(otxn_field(INVOICE_ID_OUT, 32, sfInvoiceID) != 32)
+        NOPE("No Invoice ID passed.");
 
     int64_t amount_xfl = float_sto_set(amount, 8); 
 

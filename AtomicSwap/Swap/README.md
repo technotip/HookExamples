@@ -2,11 +2,11 @@
 
 This hook enables atomic swaps from EUR to ETB, on the Xahau network.
 
-There are 2 hooks:
-Hook 1: Triggered on Invoke Transaction. This is to set the "Conversion Rate".
+There are 2 hooks:  
+Hook 1: Triggered on Invoke Transaction. This is to set the "Conversion Rate".  
 Hook 2: For the actual Atomic Swap.
 
-### On Xahau Testnetwork
+### Working Example On Xahau Testnetwork
 
 Hook 1: `A90D335BC1811C551FF05047B57CB3FECE5655B4D040A3AB96E33EAFDDC66491`  
 Hook 2: `230ACD076069D23D5D184DB71197D3718AEF6D37AA5D6CD15B143E6060BBD9DC`
