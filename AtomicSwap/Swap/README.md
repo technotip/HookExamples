@@ -6,6 +6,11 @@ There are 2 hooks:
 Hook 1: Triggered on Invoke Transaction. This is to set the "Conversion Rate".
 Hook 2: For the actual Atomic Swap.
 
+### On Xahau Testnetwork
+
+Hook 1: `A90D335BC1811C551FF05047B57CB3FECE5655B4D040A3AB96E33EAFDDC66491`
+Hook 2: `230ACD076069D23D5D184DB71197D3718AEF6D37AA5D6CD15B143E6060BBD9DC`
+
 ## Important
 
 The account on which the hook is installed must have ETB balance. If sufficient ETB balance is not there for the swap then the transaction will be rejected. The hook account accepts ETB from the ETB issuer only.
