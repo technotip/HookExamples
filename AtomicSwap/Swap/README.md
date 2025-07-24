@@ -8,8 +8,8 @@ Hook 2: For the actual Atomic Swap.
 
 ### Working Example On Xahau Testnetwork
 
-Hook 1: `A90D335BC1811C551FF05047B57CB3FECE5655B4D040A3AB96E33EAFDDC66491`  
-Hook 2: `230ACD076069D23D5D184DB71197D3718AEF6D37AA5D6CD15B143E6060BBD9DC`
+**Hook 1:** `A90D335BC1811C551FF05047B57CB3FECE5655B4D040A3AB96E33EAFDDC66491`  
+**Hook 2:** `230ACD076069D23D5D184DB71197D3718AEF6D37AA5D6CD15B143E6060BBD9DC`
 
 ## Important
 
@@ -28,6 +28,24 @@ import {
 
 const R = floatToLEXfl("5"); // Conversion Rate. Ex: 5
 console.log(R);
+```
+
+**Invoke Transaction Example**
+
+```
+{
+  "Destination": "rHookAccount...",
+  "HookParameters": [
+    {
+      "HookParameter": {
+        "HookParameterName": "52",
+        "HookParameterValue": "008053EE7BA88A54"
+      }
+    }
+  ],
+  "TransactionType": "Invoke",
+  "Account": "rWhitelistedAccount...",
+}
 ```
 
 ### Hook 2 ( Payment Transaction )
@@ -56,6 +74,22 @@ All incoming transactions must include an InvoiceID, which is carried forward to
 
 - Outgoing transactions from the hook account are simply accepted.
 - If the transaction does not match the expected currency/issuer or lacks an InvoiceID, it is rejected
+
+**Swap Payment Transaction**
+
+```
+{
+  "Destination": "rHookAccount...",
+  "Amount": {
+    "value": "1",
+    "currency": "EUR",
+    "issuer": "rIssuerEUR..."
+  },
+  "InvoiceID": "3EF30679725C5ED3DDA84520A9CA2EE63ED74B46C48E168E9122B7458EECE27C", // replace with proper invoice id
+  "TransactionType": "Payment",
+  "Account": "rInDepositPreauth..."
+}
+```
 
 ## Useful Tools
 
