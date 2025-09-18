@@ -71,7 +71,6 @@ int64_t hook(uint32_t reserved) {
     if(float_sto(AMOUNT_OUT, 49, currency, 20, HOOK_ACC, 20, amount_xfl, sfAmount) < 0) 
         NOPE("Wrong AMT - < xlf 8b req amount, 20b currency, 20b issuer >");  
 
-   
     etxn_reserve(1);
     uint32_t fls = (uint32_t)ledger_seq() + 1;
     *((uint32_t *)(FLS_OUT)) = FLIP_ENDIAN(fls);
@@ -94,8 +93,6 @@ int64_t hook(uint32_t reserved) {
     uint8_t emithash[32]; 
     if(emit(SBUF(emithash), SBUF(txn)) != 32)
         DONE("Failed To Emit.");    
-        
-    TRACEHEX(txn);
 
     DONE("Additional tokens issued Successful.");   
     _g(1,1);
