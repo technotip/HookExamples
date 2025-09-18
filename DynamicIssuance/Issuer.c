@@ -44,11 +44,23 @@ uint8_t txn[312] =
 int64_t hook(uint32_t reserved) {
     uint32_t current_ledger = ledger_seq();
 
-    uint8_t etb_issuer[20] = {};
-    uint8_t etb_currency[20] = { 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x45U, 0x54U, 0x42U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U };
+    // uint8_t issuer[20] = {};
+    // uint8_t currency[20] = { 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x45U, 0x54U, 0x42U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U };
+
+    uint8_t issuer[20];
+    if(hook_param(SBUF(issuer), "ISSUER", 6) != 20)
+        NOPE("Misconfigured. Issuer account not set as Hook Parameter.");
+
+    uint8_t currency[20];
+    if(hook_param(SBUF(currency), "IOU", 3) != 20)
+        NOPE("Misconfigured. Currency not set as Hook Parameter.");
+
+    uint8_t invoke_acc[20];
+    if(hook_param(SBUF(invoke_acc), "W_ACC", 5) != 20)
+        NOPE("Misconfigured. Whitelist account not set as Hook Parameter.");    
 
     uint8_t DEST_ACC[20];
-    if(hook_param(SBUF(DEST_ACC), "W_ACC", 5) != 20)
+    if(hook_param(SBUF(DEST_ACC), "D_ACC", 5) != 20)
         NOPE("Misconfigured. Whitelist account not set as Hook Parameter.");    
 
     uint8_t amount[8];
@@ -64,13 +76,13 @@ int64_t hook(uint32_t reserved) {
     if (BUFFER_EQUAL_20(HOOK_ACC, account)) 
         DONE("Outgoing Transaction.");   
 
-    if (!BUFFER_EQUAL_20(account, DEST_ACC)) 
+    if (!BUFFER_EQUAL_20(account, invoke_acc)) 
         DONE("Some Incoming Transaction.");             
 
     if(otxn_field(INVOICE_ID_OUT, 32, sfInvoiceID) != 32)
         NOPE("No Invoice ID passed.");
 
-    if(float_sto(AMOUNT_OUT,  49, etb_currency, 20, etb_issuer, 20, amount_xfl, sfAmount) < 0) 
+    if(float_sto(AMOUNT_OUT,  49, currency, 20, issuer, 20, amount_xfl, sfAmount) < 0) 
         NOPE("Wrong AMT - < xlf 8b req amount, 20b currency, 20b issuer >");  
    
     etxn_reserve(1);
