@@ -16,9 +16,9 @@ Make sure to install this hook on the issuer account. The hook should be configu
 
 While installing the hook, make sure to include the following hook parameter:
 
-- **`ISSUER`** - Set the token issuer account ID. 20 bytes.
-- **`IOU`** - Set the currency to be issued by the issuer. 20 bytes.
+All 20 bytes:
 
+- **`IOU`** - Set the currency to be issued by the issuer.
 - **`W_ACC`** - This is a whitelisted account ID that can trigger the issuer with an invoke call to issue more ETB tokens/IOU.
 - **`D_ACC`** - This is a whitelisted account ID that will receive the ETB tokens/IOU when **W_ACC** invokes the issuer account..
 
