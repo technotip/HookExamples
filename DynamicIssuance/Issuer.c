@@ -50,8 +50,8 @@ int64_t hook(uint32_t reserved) {
     if(hook_param(SBUF(invoke_acc), "W_ACC", 5) != 20)
         NOPE("Misconfigured. Whitelist account not set as Hook Parameter.");    
 
-    if(hook_param(SBUF(DEST_ACC), "D_ACC", 5) != 20)
-        NOPE("Misconfigured. Whitelist account not set as Hook Parameter.");    
+    if(hook_param(DEST_ACC, 20, "D_ACC", 5) != 20)
+        NOPE("Misconfigured. Destination account not set as Hook Parameter.");    
 
     uint8_t amount[8];
     if(otxn_param(SBUF(amount), "AMT", 3) != 8)
