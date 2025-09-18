@@ -33,14 +33,13 @@ uint8_t txn[278] =
 // TX BUILDER
 #define FLS_OUT    (txn + 15U) 
 #define LLS_OUT    (txn + 21U) 
-#define FEE_OUT    (txn + 109U) 
+#define FEE_OUT    (txn + 75U) 
 #define AMOUNT_OUT (txn + 25U)
 #define HOOK_ACC   (txn + 120U)
 #define DEST_ACC   (txn + 142U)
 #define EMIT_OUT   (txn + 162U) 
 
 int64_t hook(uint32_t reserved) {
-    uint32_t current_ledger = ledger_seq();
 
     uint8_t currency[20];
     if(hook_param(SBUF(currency), "IOU", 3) != 20)
@@ -69,8 +68,9 @@ int64_t hook(uint32_t reserved) {
     if (!BUFFER_EQUAL_20(account, invoke_acc)) 
         DONE("Some Incoming Transaction.");             
 
-    if(float_sto(AMOUNT_OUT,  49, currency, 20, HOOK_ACC, 20, amount_xfl, sfAmount) < 0) 
+    if(float_sto(AMOUNT_OUT, 49, currency, 20, HOOK_ACC, 20, amount_xfl, sfAmount) < 0) 
         NOPE("Wrong AMT - < xlf 8b req amount, 20b currency, 20b issuer >");  
+
    
     etxn_reserve(1);
     uint32_t fls = (uint32_t)ledger_seq() + 1;
@@ -93,9 +93,11 @@ int64_t hook(uint32_t reserved) {
 
     uint8_t emithash[32]; 
     if(emit(SBUF(emithash), SBUF(txn)) != 32)
-        DONE("Failed To Emit.");           
+        DONE("Failed To Emit.");    
+        
+    TRACEHEX(txn);
 
-    DONE("Additional ETB Issuance Successful.");   
+    DONE("Additional tokens issued Successful.");   
     _g(1,1);
     return 0;    
 }
